@@ -5,7 +5,7 @@
 .DESCRIPTION
     Check certificate transparency logs for the specified domain.
     
-    Currently one the free api is supported which is 100 queries per hour.
+    Currently only the free api is supported which is 100 queries per hour.
 
     All information you can get with this module is also available on https://sslmate.com/ct_search_api/.
 
@@ -64,6 +64,10 @@
 .EXAMPLE
     Get informations for the example.com domain, excluding the dnsnames.
 
+    Get-PSCTLogs -ShowDnsNames $false
+
+    Output:
+
     id                : 6662227615
     tbs_sha256        : bca4e466a942e392fa3f25ba37b4afd650e786f2427e060d10c77cfd1d1d3ed6
     cert_sha256       : efba26d8c1ce3779ac77630a90f82163a3d6892ed6afee408672cf19eba7a362
@@ -88,7 +92,7 @@
                         5bUjfv/76KB57is8tYf9sh5ikLGKauxCM/zRIcGa3bXLDafk5S2g5Vr2hs230d/NGW1wZrE+zdGuMxfGJzJP+DAFviBfcQnFg4+1zMEKcqS87oniOyG+60RMM0MdejBD7AS43m9us96Gsun/4kufLQUTIFfnzxLutUV++3seshgefQOy5C/ayi8y1VTNmujPCxPCi6Q==
 
 .NOTES
-    Written and testet in PowerShell 5.1.
+    Written and testet in Powershell Core on Windows and Linux.
 
 .LINK
     https://github.com/IT-Administrators/PSCTLogsRoH
@@ -169,7 +173,7 @@ function Get-PSCTLogs {
             $ShowRevocationInfo { $NewApiUrl = $NewApiUrl + $RestParameterHt.ShowRevocation }
             $ShowProblemReportingInfo { $NewApiUrl = $NewApiUrl + $RestParameterHt.ShowProblemReportInfo }
             $ShowCertData { $NewApiUrl = $NewApiUrl + $RestParameterHt.ShowCertData }
-            Default {$NewApiUrl}
+            # Default {$NewApiUrl}
         }
     }
     
