@@ -144,7 +144,19 @@ function Get-PSCTLogs {
         ParameterSetName='GetCTLogInfoDomain',
         Position=0,
         HelpMessage='Show revocation info.')]
-        [bool]$ShowCertData = $true
+        [bool]$ShowCertData = $true,
+
+        [Parameter(
+        ParameterSetName='GetCTLogInfoDomain',
+        Position=0,
+        HelpMessage='Base64 representation of the DER-encoded Subject Public Key Info.')]
+        [bool]$ShowPubKeyDer = $false,
+
+        [Parameter(
+        ParameterSetName='GetCTLogInfoDomain',
+        Position=0,
+        HelpMessage='Match wildcard certificates.')]
+        [bool]$MatchWildcards = $false
 )
     
     begin {
@@ -160,6 +172,8 @@ function Get-PSCTLogs {
             "ShowRevocation" = "&expand=revocation"
             "ShowProblemReportInfo" = "&expand=problem_reporting"
             "ShowCertData" = "&expand=cert_der"
+            "ShowPubKeyDer" = "&expand=pubkey_der"
+            "MatchWilCards" = "&matchwild_cards=$($MatchWildcards)"
         }
         # If no parameter is used, show all informations.
         if ($PSBoundParameters.Count -eq 0) {
@@ -173,6 +187,8 @@ function Get-PSCTLogs {
             $ShowRevocationInfo { $NewApiUrl = $NewApiUrl + $RestParameterHt.ShowRevocation }
             $ShowProblemReportingInfo { $NewApiUrl = $NewApiUrl + $RestParameterHt.ShowProblemReportInfo }
             $ShowCertData { $NewApiUrl = $NewApiUrl + $RestParameterHt.ShowCertData }
+            $ShowPubKeyDer {$NewApiUrl = $NewApiUrl + $RestParameterHt.ShowPubKeyDer}
+            $MatchWildcards {$NewApiUrl = $NewApiUrl + $RestParameterHt.MatchWilCards}
             # Default {$NewApiUrl}
         }
     }
