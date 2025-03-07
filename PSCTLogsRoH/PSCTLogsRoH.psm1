@@ -247,8 +247,6 @@ function Get-PSCTLogs {
         if ($After) {
             $NewApiUrl = $NewApiUrl + $RestParameterHt.After
         }
-
-        Write-Output $NewApiUrl
     }
     
     process {
