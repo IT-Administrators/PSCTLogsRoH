@@ -243,7 +243,7 @@ function Get-PSCTLogs {
             $MatchWildcards {$NewApiUrl = $NewApiUrl + $RestParameterHt.MatchWilCards}
             # Default {$NewApiUrl}
         }
-        # Catch non bool paramters
+        # Catch non bool parameters.
         if ($After) {
             $NewApiUrl = $NewApiUrl + $RestParameterHt.After
         }
@@ -253,7 +253,7 @@ function Get-PSCTLogs {
         # Get information.
         # Invoke-RestMethod -Method Get -Uri $NewApiUrl
         if ($PSCmdlet.ShouldProcess($NewApiUrl, "Get")) {
-            Invoke-RestMethod -Method Get -Uri $NewApiUrl
+            Invoke-RestMethod -Uri $NewApiUrl
         }
     }
     
