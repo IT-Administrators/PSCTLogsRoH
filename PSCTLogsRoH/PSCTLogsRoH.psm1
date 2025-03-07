@@ -131,6 +131,36 @@ function Get-PSCTLogs {
         [Parameter(
         ParameterSetName='GetCTLogInfoDomain',
         Position=0,
+        HelpMessage="The URL of the issuer's website, or null if unknown.")]
+        [bool]$ShowIssuerWebsite = $false,
+
+        [Parameter(
+        ParameterSetName='GetCTLogInfoDomain',
+        Position=0,
+        HelpMessage="The domain names which can be placed in a CAA record to authorize the issuer.")]
+        [bool]$ShowIssuerCAADomains = $false,
+
+        [Parameter(
+        ParameterSetName='GetCTLogInfoDomain',
+        Position=0,
+        HelpMessage="Information about the organization which controls the issuer's private key.")]
+        [bool]$ShowIssuerOperator= $false,
+
+        [Parameter(
+        ParameterSetName='GetCTLogInfoDomain',
+        Position=0,
+        HelpMessage="The base64 representation of the issuer's DER-encoded Subject Public Key Info.")]
+        [bool]$ShowIssuerPubKeyDer = $false,
+
+        [Parameter(
+        ParameterSetName='GetCTLogInfoDomain',
+        Position=0,
+        HelpMessage="The base64 representation of the issuer's DER-encoded distinguished name.")]
+        [bool]$ShowIssuerNameDer = $false,
+
+        [Parameter(
+        ParameterSetName='GetCTLogInfoDomain',
+        Position=0,
         HelpMessage='Show revocation info.')]
         [bool]$ShowRevocationInfo = $true,
 
@@ -155,8 +185,20 @@ function Get-PSCTLogs {
         [Parameter(
         ParameterSetName='GetCTLogInfoDomain',
         Position=0,
+        HelpMessage="Information about the certificate's public key.")]
+        [bool]$ShowPubKey = $false,
+
+        [Parameter(
+        ParameterSetName='GetCTLogInfoDomain',
+        Position=0,
         HelpMessage='Match wildcard certificates.')]
-        [bool]$MatchWildcards = $false
+        [bool]$MatchWildcards = $false,
+
+        [Parameter(
+        ParameterSetName='GetCTLogInfoDomain',
+        Position=0,
+        HelpMessage='Return issuances that were discovered by SSLMate after the issuance with the specified ID.')]
+        [int64]$After
 )
     
     begin {
@@ -164,33 +206,49 @@ function Get-PSCTLogs {
         $API_URL = "https://api.certspotter.com/v1/issuances?domain=$($DomainName)"
         # Save default api url to create rest api substrings.
         $NewApiUrl = $API_URL
-        # Possible reststrings depending on the specified parameter.
+        # Possible rest strings depending on the specified parameter.
         $RestParameterHt = @{
             "SearchSubDomains" = "&include_subdomains=true"
             "ShowDnsNames" = "&expand=dns_names"
             "ShowIssuer" = "&expand=issuer"
+            "ShowIssuerWebsite" = "&expand=issuer.website"
+            "ShowIssuerCAADomains" = "&expand=issuer.caa_domains"
+            "ShowIssuerOperator" = "&expand=issuer.operator"
+            "ShowIssuerPubKeyDer" = "&expand=issuer.pubkey_der"
+            "ShowIssuerNameDer" = "&expand=issuer.name_der"
             "ShowRevocation" = "&expand=revocation"
             "ShowProblemReportInfo" = "&expand=problem_reporting"
             "ShowCertData" = "&expand=cert_der"
             "ShowPubKeyDer" = "&expand=pubkey_der"
-            "MatchWilCards" = "&matchwild_cards=$($MatchWildcards)"
+            "ShowPubKey" = "&expand=pubkey"
+            "MatchWilCards" = "&matchwild_cards=$MatchWildcards"
+            "After" = "&after=$After"
         }
-        # If no parameter is used, show all informations.
-        if ($PSBoundParameters.Count -eq 0) {
-            $NewApiUrl = $API_URL + $RestParameterHt.SearchSubDomains + $RestParameterHt.ShowDnsNames + $RestParameterHt.ShowIssuer + $RestParameterHt.ShowRevocation + $RestParameterHt.ShowProblemReportInfo + $RestParameterHt.ShowCertData
-        }
-        # If a parameter is used. The correct url parameter is appended.
-        switch ($PSBoundParameters.Count -gt 0) {
+        # If a parameter is true. The correct url parameter is appended.
+        switch ($true) {
             $SearchSubDomains { $NewApiUrl = $NewApiUrl + $RestParameterHt.SearchSubDomains }
             $ShowDnsNames { $NewApiUrl = $NewApiUrl + $RestParameterHt.ShowDnsNames }
             $ShowIssuer { $NewApiUrl = $NewApiUrl + $RestParameterHt.ShowIssuer }
+            $ShowIssuerWebsite {$NewApiUrl = $NewApiUrl + $RestParameterHt.ShowIssuerWebsite}
+            $ShowIssuerCAADomains {$NewApiUrl = $NewApiUrl + $RestParameterHt.ShowIssuerCAADomains}
+            $ShowIssuerOperator {$NewApiUrl = $NewApiUrl + $RestParameterHt.ShowIssuerOperator}
+            $ShowIssuerPubKeyDer {$NewApiUrl = $NewApiUrl + $RestParameterHt.ShowIssuerPubKeyDer}
+            $ShowIssuerNameDer {$NewApiUrl = $NewApiUrl + $RestParameterHt.ShowIssuerNameDer}
+
             $ShowRevocationInfo { $NewApiUrl = $NewApiUrl + $RestParameterHt.ShowRevocation }
             $ShowProblemReportingInfo { $NewApiUrl = $NewApiUrl + $RestParameterHt.ShowProblemReportInfo }
             $ShowCertData { $NewApiUrl = $NewApiUrl + $RestParameterHt.ShowCertData }
             $ShowPubKeyDer {$NewApiUrl = $NewApiUrl + $RestParameterHt.ShowPubKeyDer}
+            $ShowPubKey {$NewApiUrl = $NewApiUrl + $RestParameterHt.ShowPubKey}
             $MatchWildcards {$NewApiUrl = $NewApiUrl + $RestParameterHt.MatchWilCards}
             # Default {$NewApiUrl}
         }
+        # Catch non bool paramters
+        if ($After) {
+            $NewApiUrl = $NewApiUrl + $RestParameterHt.After
+        }
+
+        Write-Output $NewApiUrl
     }
     
     process {
