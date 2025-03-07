@@ -173,7 +173,7 @@ function Get-PSCTLogs {
         [Parameter(
         ParameterSetName='GetCTLogInfoDomain',
         Position=0,
-        HelpMessage='Show revocation info.')]
+        HelpMessage='The base64 representation of the DER-encoded X.509 certificate (if known) or precertificate (if certificate is not known).')]
         [bool]$ShowCertData = $true,
 
         [Parameter(
@@ -247,6 +247,7 @@ function Get-PSCTLogs {
         if ($After) {
             $NewApiUrl = $NewApiUrl + $RestParameterHt.After
         }
+        Write-Output $NewApiUrl
     }
     
     process {
